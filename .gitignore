@@ -35,5 +35,8 @@ web/src/node_modules
 web/src/package-lock.json
 AzurLane*
 
-.kilo/
+.kilo/kilo.jsonc
 update_docs/
+apk_tmp/
+/tmp/
+apk_repack_work/

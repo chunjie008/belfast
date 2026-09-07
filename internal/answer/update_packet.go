@@ -49,7 +49,7 @@ func buildUpdateCheckResponse(buffer *[]byte, client *connection.Client, hashesF
 		Url:                     proto.String(""),
 		Version:                 versions,
 		ProxyIp:                 proto.String(consts.RegionProxies[belfastRegion]),
-		ProxyPort:               proto.Uint32(20000),
+		ProxyPort:               proto.Uint32(80),
 		IsTs:                    proto.Uint32(0),
 		Timestamp:               proto.Uint32(uint32(time.Now().Unix())),
 		Monday_0OclockTimestamp: proto.Uint32(consts.Monday_0OclockTimestamps[belfastRegion]),

@@ -1,47 +1,47 @@
 # ⚓ Belfast
 
-Belfast is a private server reimplementation for the mobile game [Azur Lane](https://en.wikipedia.org/wiki/Azur_Lane), written in [Go](https://go.dev/) using [Iris](https://www.iris-go.com/) and [Gorm](https://gorm.io). It targets iOS and Android clients without requiring jailbreak or root access.
+Belfast 是手机游戏《碧蓝航线》（[Azur Lane](https://en.wikipedia.org/wiki/Azur_Lane)）的私有服务器重实现，使用 [Go](https://go.dev/) 编写，并采用 [Iris](https://www.iris-go.com/) 和 [Gorm](https://gorm.io)。它面向 iOS 和 Android 客户端运行，无需越狱或 root 权限。
 
 ![Packet progress](https://cdn.molly.sh/belfast/implem.png)
 
-# 🌟 Features
+# 🌟 功能
 
-Belfast currently has:
+Belfast 目前具备以下功能：
 
-- A low-level multiplexed TCP server, which allows multiple connections at once.
-- The ability of following game updates, along with importing ship, items, ... data automatically (US version).
-- A small API that allows you to quickly implement new game messages without head scratching.
-- A great dissection tool in which every packet is stored, along with a `protobuf` -> `json` deserializer.
-- A REST API with Swagger docs and admin endpoints for server tooling.
-- A web UI in development: https://github.com/ggmolly/belfast-web.
-- Config-driven packet response hydration for rapid prototyping.
-- Packet progress tooling and webhook-based status updates.
-- Runtime config toggles (maintenance mode, host/port overrides).
+- 底层多路复用 TCP 服务器，支持同时建立多个连接。
+- 跟踪游戏更新，并自动导入舰船、道具等数据（美服版本）。
+- 提供简洁的 API，可快速实现新的游戏消息，无需繁琐摸索。
+- 完善的数据包分析工具，能够保存每个数据包，并提供 `protobuf` -> `json` 反序列化功能。
+- 提供 Swagger 文档和管理端点的 REST API，便于服务器工具开发。
+- 正在开发中的 Web UI：https://github.com/ggmolly/belfast-web。
+- 基于配置的数据包响应填充功能，便于快速原型开发。
+- 数据包进度管理工具和基于 Webhook 的状态更新功能。
+- 运行时配置开关（维护模式、主机/端口覆盖）。
 
-# ⚙️ Config
+# ⚙️ 配置
 
-- `cmd/belfast` defaults to `server.toml` (game server config).
-- `cmd/gateway` defaults to `gateway.toml` (gateway config).
-- Region is configured via `[region].default` (`CN`, `EN`, `JP`, `KR`, `TW`) and defaults to `EN`.
-- Gateway server list is defined in `[[servers]]`; set optional `name` per server for display text, and gateway probes each game server over the game protocol (`CS_10022` -> `SC_10023`) to resolve server state and load.
-- To embed the git commit in status, build with `-ldflags "-X github.com/ggmolly/belfast/internal/buildinfo.Commit=$(git rev-parse --short HEAD)"`.
+- `cmd/belfast` 默认使用 `server.toml`（游戏服务器配置）。
+- `cmd/gateway` 默认使用 `gateway.toml`（网关配置）。
+- 区域通过 `[region].default`（`CN`、`EN`、`JP`、`KR`、`TW`）配置，默认为 `EN`。
+- 网关服务器列表定义在 `[[servers]]` 中；可为每台服务器设置可选的 `name` 作为显示文本。网关会通过游戏协议（`CS_10022` -> `SC_10023`）探测每台游戏服务器，以获取服务器状态和负载。
+- 如需将 Git 提交信息嵌入状态信息，请使用 `-ldflags "-X github.com/ggmolly/belfast/internal/buildinfo.Commit=$(git rev-parse --short HEAD)"` 进行构建。
 
-# 🐛 Reporting Issues
+# 🐛 问题反馈
 
-- Use the GitHub issue forms for bug reports and feature requests.
-- Bug reports support region selection and optional debugging attachments:
-  - `.pcap` captures
-  - ADB logcat output from the ADB watcher (`-a` / `--adb`)
-- Useful local command when collecting ADB logs:
+- 请使用 GitHub Issue 表单提交错误报告和功能请求。
+- 错误报告支持选择区域，并可附加以下调试文件：
+  - `.pcap` 抓包文件
+  - ADB 监视器（`-a` / `--adb`）生成的 logcat 输出
+- 收集 ADB 日志时可使用以下本地命令：
   - `go run ./cmd/belfast -a`
 
-# 🌠 State
+# 🌠 项目状态
 
-Belfast reimplements all features from the game (except for background tasks).
+Belfast 正在重实现游戏中的全部功能（后台任务除外）。
 
-# 🚀 Roadmap
+# 🚀 路线图
 
-1. Clean up the code
-2. Reach 100% coverage on packet reimplementation
-3. Implement game tracking (opt-in in server config for administrators)
-4. Maintain more [belfast-web](https://github.com/ggmolly/belfast-web)
+1. 清理和完善代码
+2. 实现数据包重实现 100% 覆盖
+3. 实现游戏跟踪功能（管理员可在服务器配置中选择启用）
+4. 持续维护 [belfast-web](https://github.com/ggmolly/belfast-web)

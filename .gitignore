@@ -17,6 +17,13 @@ dump
 /belfast
 /belfast.exe
 
+# Local run artifacts
+/bin/
+/run/
+/logs/
+/server.toml
+/apk/
+
 # This folder contains raw protobuf messages, they're not needed in the repo
 # and will be moved later to another location
 packets/protobuf_src

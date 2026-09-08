@@ -12,6 +12,11 @@ proxy_port = 20000
 # proxy_dial_timeout_ms = 5000
 # require_private_clients = true
 
+[region]
+# Region served by this gateway (valid values: CN, EN, JP, KR, TW).
+# Overrides the AL_REGION environment variable; defaults to EN when unset.
+# default = "EN"
+
 [[servers]]
 # Server list entries (used by gateway).
 id = 1

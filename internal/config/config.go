@@ -31,6 +31,7 @@ type GatewayConfig struct {
 	ProxyDialTimeoutMS int `toml:"proxy_dial_timeout_ms"`
 	// When nil, defaults to true.
 	RequirePrivateClients *bool          `toml:"require_private_clients"`
+	Region                RegionConfig   `toml:"region"`
 	Servers               []ServerConfig `toml:"servers"`
 	Path                  string         `toml:"-"`
 }

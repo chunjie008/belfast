@@ -1,5 +1,30 @@
 # DNS 配置说明
 
+## 2026-09-08 排障结论
+
+客户端无法连接私服的根因与修复：
+
+1. **公网 53 端口不可达**：运营商/云平台拦截或未转发公网 UDP/TCP 53，外部查询
+   `186.241.94.102:53` 到不了服务器上的 dnsmasq（tcpdump 确认无入站包）。
+   纯 DNS 方案对公网客户端不可用。
+2. **客户端 DNS 顺序**：手机 WiFi 第一个 DNS 是路由器的 IPv6 链路本地地址，
+   即使 53 可达也可能不走我们的 DNS。
+3. **客户端替代方案（已采用）**：手机已 root（APatch），用 bind mount 的 hosts 劫持：
+   - 记录文件：`/data/adb/belfast-hosts`（SELinux 上下文必须是 `system_file`，
+     否则 netd 读取 `/system/etc/hosts` 会 EACCES，静默回退到 DNS 查询）。
+   - 开机脚本：`/data/adb/service.d/belfast-hosts.sh`，执行
+     `mount --bind /data/adb/belfast-hosts /system/etc/hosts`。
+4. **服务器侧修复**：
+   - `gateway.toml` 增加 `require_private_clients = false`：经 nginx stream 代理后
+     来源恒为 127.0.0.1，Go `net.IP.IsPrivate()` 不认 loopback，默认开启会拒绝所有连接。
+   - `[[servers]]` 的 `ip`/`port` 必须填客户端可达地址（`186.241.94.102:20000`，
+     由 nginx stream 转发到 belfast 7000），不能填 127.0.0.1。
+   - gateway 进程 region 默认为 EN，取到的资源 hash 与 CN 客户端不符
+     （表现为客户端"Hash文件校验失败"）。gateway.toml 现支持 `[region] default = "CN"`。
+   - 服务器 `/etc/hosts` 保留 `203.107.54.123 line1-login-bili-blhx.bilibiligame.net`，
+     供后端 `GameUpdate/GetHashes` 绕过本机 DNS 劫持直连官方 gateway 拉取资源 hash
+     （否则解析到自己，缓存为空 hash）。
+
 ## 当前部署
 
 本机使用 `dnsmasq` 提供 DNS 缓存和递归转发服务。

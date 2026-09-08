@@ -15,6 +15,7 @@ import (
 	"github.com/ggmolly/belfast/internal/consts"
 	"github.com/ggmolly/belfast/internal/logger"
 	"github.com/ggmolly/belfast/internal/packets"
+	"github.com/ggmolly/belfast/internal/region"
 )
 
 var gatewayOnce sync.Once
@@ -37,6 +38,12 @@ func RunGateway() {
 	if err != nil {
 		logger.LogEvent("Config", "Load", err.Error(), logger.LOG_LEVEL_ERROR)
 		os.Exit(1)
+	}
+	if loadedConfig.Region.Default != "" {
+		if err := region.SetCurrent(loadedConfig.Region.Default); err != nil {
+			logger.LogEvent("Config", "Load", err.Error(), logger.LOG_LEVEL_ERROR)
+			os.Exit(1)
+		}
 	}
 	if loadedConfig.Mode == "proxy" {
 		runtime := newGatewayProxyRuntime(loadedConfig)

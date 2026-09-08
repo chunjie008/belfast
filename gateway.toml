@@ -1,0 +1,11 @@
+bind_address = "127.0.0.1"
+port = 8080
+proxy_port = 20000
+
+[[servers]]
+id = 1
+name = "紫色大神服"
+ip = "127.0.0.1"
+port = 7000
+api_port = 2289
+assert_online = true

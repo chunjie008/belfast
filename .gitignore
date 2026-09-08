@@ -21,7 +21,6 @@ dump
 /bin/
 /run/
 /logs/
-/server.toml
 /apk/
 
 # This folder contains raw protobuf messages, they're not needed in the repo
@@ -41,7 +40,4 @@ apk_tmp/
 /tmp/
 apk_repack_work/
 kilo-remote/
-docs/
-deploy/
-gateway.toml
 mitmdump/

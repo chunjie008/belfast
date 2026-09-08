@@ -40,3 +40,8 @@ update_docs/
 apk_tmp/
 /tmp/
 apk_repack_work/
+kilo-remote/
+docs/
+deploy/
+gateway.toml
+mitmdump/

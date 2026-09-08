@@ -24,6 +24,7 @@ type Config struct {
 type GatewayConfig struct {
 	BindAddress string `toml:"bind_address"`
 	Port        int    `toml:"port"`
+	ProxyPort   int    `toml:"proxy_port"`
 	Mode        string `toml:"mode"`
 	ProxyRemote string `toml:"proxy_remote"`
 	// Timeout (in ms) when dialing proxy_remote in gateway proxy mode.
@@ -37,6 +38,7 @@ type GatewayConfig struct {
 type BelfastConfig struct {
 	BindAddress string `toml:"bind_address"`
 	Port        int    `toml:"port"`
+	ProxyPort   int    `toml:"proxy_port"`
 	Maintenance bool   `toml:"maintenance"`
 	Name        string `toml:"name"`
 	// When nil, defaults to true.
@@ -132,6 +134,9 @@ func Load(path string) (Config, error) {
 	if cfg.Belfast.Port == 0 {
 		cfg.Belfast.Port = 80
 	}
+	if cfg.Belfast.ProxyPort == 0 {
+		cfg.Belfast.ProxyPort = 20000
+	}
 	if cfg.Belfast.RequirePrivateClients == nil {
 		defaultRequirePrivate := true
 		cfg.Belfast.RequirePrivateClients = &defaultRequirePrivate
@@ -177,6 +182,9 @@ func LoadGateway(path string) (GatewayConfig, error) {
 	if cfg.Port == 0 {
 		cfg.Port = 80
 	}
+	if cfg.ProxyPort == 0 {
+		cfg.ProxyPort = 20000
+	}
 	if strings.TrimSpace(cfg.Mode) == "" {
 		cfg.Mode = "serve"
 	}
@@ -192,6 +200,7 @@ func LoadGateway(path string) (GatewayConfig, error) {
 		Belfast: BelfastConfig{
 			BindAddress: cfg.BindAddress,
 			Port:        cfg.Port,
+			ProxyPort:   cfg.ProxyPort,
 		},
 		Servers: cfg.Servers,
 		Path:    cfg.Path,

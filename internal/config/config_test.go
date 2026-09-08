@@ -123,6 +123,9 @@ default = "CN"
 	if cfg.Belfast.Port != 80 {
 		t.Fatalf("expected default port 80, got %d", cfg.Belfast.Port)
 	}
+	if cfg.Belfast.ProxyPort != 20000 {
+		t.Fatalf("expected default proxy port 20000, got %d", cfg.Belfast.ProxyPort)
+	}
 	if cfg.Belfast.RequirePrivateClients == nil {
 		t.Fatalf("expected require_private_clients to default")
 	}
@@ -359,6 +362,9 @@ assert_online = true
 	if Current().Belfast.Port != 8088 {
 		t.Fatalf("expected current port 8088, got %d", Current().Belfast.Port)
 	}
+	if Current().Belfast.ProxyPort != 20000 {
+		t.Fatalf("expected current proxy port 20000, got %d", Current().Belfast.ProxyPort)
+	}
 }
 
 func TestLoadGatewayDefaultPort(t *testing.T) {
@@ -382,6 +388,9 @@ api_port = 2289
 	}
 	if cfg.Port != 80 {
 		t.Fatalf("expected default gateway port 80, got %d", cfg.Port)
+	}
+	if cfg.ProxyPort != 20000 {
+		t.Fatalf("expected default proxy port 20000, got %d", cfg.ProxyPort)
 	}
 }
 

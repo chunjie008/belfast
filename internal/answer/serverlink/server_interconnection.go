@@ -1,6 +1,7 @@
 package serverlink
 
 import (
+	"github.com/ggmolly/belfast/internal/config"
 	"github.com/ggmolly/belfast/internal/connection"
 	"github.com/ggmolly/belfast/internal/consts"
 	"github.com/ggmolly/belfast/internal/protobuf"
@@ -15,7 +16,7 @@ func BuildServerInterconnectionResponse(buffer *[]byte, client *connection.Clien
 		GatewayIp:   proto.String(consts.RegionGateways[belfastRegion]),
 		GatewayPort: proto.Uint32(80),
 		ProxyIp:     proto.String(consts.RegionProxies[belfastRegion]),
-		ProxyPort:   proto.Uint32(80),
+		ProxyPort:   proto.Uint32(uint32(config.Current().Belfast.ProxyPort)),
 	}
 
 	return client.SendMessage(10803, &response)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ggmolly/belfast/internal/config"
 	"github.com/ggmolly/belfast/internal/connection"
 	"github.com/ggmolly/belfast/internal/consts"
 	"github.com/ggmolly/belfast/internal/misc"
@@ -49,7 +50,7 @@ func buildUpdateCheckResponse(buffer *[]byte, client *connection.Client, hashesF
 		Url:                     proto.String(""),
 		Version:                 versions,
 		ProxyIp:                 proto.String(consts.RegionProxies[belfastRegion]),
-		ProxyPort:               proto.Uint32(80),
+		ProxyPort:               proto.Uint32(uint32(config.Current().Belfast.ProxyPort)),
 		IsTs:                    proto.Uint32(0),
 		Timestamp:               proto.Uint32(uint32(time.Now().Unix())),
 		Monday_0OclockTimestamp: proto.Uint32(consts.Monday_0OclockTimestamps[belfastRegion]),

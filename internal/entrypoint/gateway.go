@@ -3,6 +3,7 @@ package entrypoint
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"sync"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/ggmolly/belfast/internal/config"
 	"github.com/ggmolly/belfast/internal/connection"
+	"github.com/ggmolly/belfast/internal/consts"
 	"github.com/ggmolly/belfast/internal/logger"
 	"github.com/ggmolly/belfast/internal/packets"
 )
@@ -44,6 +46,7 @@ func RunGateway() {
 			}
 			runtime.Update(updated)
 		})
+		installInterruptHandler(nil)
 		if err := runtime.Run(); err != nil {
 			logger.LogEvent("Gateway", "Proxy", fmt.Sprintf("%v", err), logger.LOG_LEVEL_ERROR)
 			os.Exit(1)
@@ -63,10 +66,24 @@ func RunGateway() {
 		}
 		server.SetRequirePrivateClients(*updated.RequirePrivateClients)
 	})
+	installInterruptHandler(server)
 	if err := server.Run(); err != nil {
 		logger.LogEvent("Gateway", "Run", fmt.Sprintf("%v", err), logger.LOG_LEVEL_ERROR)
 		os.Exit(1)
 	}
+}
+
+func installInterruptHandler(server *connection.Server) {
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, os.Interrupt)
+	go func() {
+		<-sigChannel
+		fmt.Printf("\r")
+		if server != nil {
+			server.DisconnectAll(consts.DR_CONNECTION_TO_SERVER_LOST)
+		}
+		os.Exit(0)
+	}()
 }
 
 func initGatewayRuntime() {

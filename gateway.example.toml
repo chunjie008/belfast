@@ -1,6 +1,8 @@
-bind_address = "0.0.0.0"
-# Gateway port (defaults to 80)
-port = 80
+bind_address = "127.0.0.1"
+# Gateway backend port; Nginx exposes the public TCP port 80
+port = 8080
+# Proxy port advertised in update/server-interconnection responses (defaults to 20000)
+proxy_port = 20000
 
 # Gateway mode:
 # - "serve" (default): reply to gateway packets locally and return [[servers]] list.

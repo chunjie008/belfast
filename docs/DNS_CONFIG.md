@@ -25,6 +25,44 @@
      供后端 `GameUpdate/GetHashes` 绕过本机 DNS 劫持直连官方 gateway 拉取资源 hash
      （否则解析到自己，缓存为空 hash）。
 
+### 选区后无法进入游戏（2026-09-08 补充）
+
+现象：登录界面能显示私服服务器名（"紫色大神服"），但点击服务器后无反应，
+多次点击弹出"请勿频繁登陆服务器"。
+
+根因：belfast 游戏服（7000 端口）与 gateway 一样默认开启
+`require_private_clients`（`internal/connection/server.go` 中 `NewServer`
+默认 `true`）。nginx stream 把公网 20000 转发到 127.0.0.1:7000 后，来源地址
+恒为 loopback，Go `net.IP.IsPrivate()` 不认 loopback，连接被立即关闭。
+客户端反复重连触发限频提示。
+
+修复：`server.toml` 的 `[belfast]` 段添加：
+
+```toml
+[belfast]
+require_private_clients = false
+```
+
+重启 belfast 生效。验证：`logs/belfast.log` 出现
+`CS_10022 -> SC_10023`（登录）和 `CS_10100 -> SC_10101`（心跳），
+不再出现 `client not in private range`。
+
+排障技巧：belfast 默认 INFO 级别看不到包处理细节，用 `LOG_LEVEL=debug`
+启动可看到 `received packet` / `SendMessage` 逐包日志；客户端侧
+`adb logcat --pid=<游戏pid>` 的 Unity 日志会打印 `connect to game server - ip:port`。
+
+### 起名"无限操作"弹窗（2026-09-08 补充）
+
+现象：新手流程录入姓名点确定后反复弹错误提示，无法完成创建角色。
+
+根因：CN 客户端的 `CS_10024` 不携带 `device_id`（protobuf 字段 3 为空字符串，
+可从 `debugs` 表十六进制 payload 确认：`...1a00` 结尾），旧代码对空 device_id
+直接返回 `result=1`，客户端反复重试。
+
+修复（`internal/answer/onboarding/create_new_player.go`）：device_id 为空时
+跳过设备绑定检查与 `UpsertDeviceAuthMap`，账号身份仅依赖登录票据解析出的
+`AuthArg2`。已部署到服务器并验证可正常进入游戏。
+
 ## 当前部署
 
 本机使用 `dnsmasq` 提供 DNS 缓存和递归转发服务。

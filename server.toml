@@ -3,6 +3,7 @@ bind_address = "127.0.0.1"
 port = 7000
 proxy_port = 20000
 name = "Belfast"
+require_private_clients = false
 
 [api]
 enabled = true

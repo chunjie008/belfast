@@ -14,6 +14,27 @@ import (
 
 // Reimplementation of SC_11000
 func LastLogin(buffer *[]byte, client *connection.Client) (int, int, error) {
+	if client == nil {
+		return 0, 11000, fmt.Errorf("last login: nil client")
+	}
+	if client.Commander == nil {
+		if client.AuthArg2 == 0 {
+			return 0, 11000, fmt.Errorf("last login: commander is not bound to session")
+		}
+		mapping, err := orm.GetYostarusMapByArg2(client.AuthArg2)
+		if err != nil {
+			return 0, 11000, fmt.Errorf("last login: resolve account for arg2 %d: %w", client.AuthArg2, err)
+		}
+		if mapping.AccountID == 0 {
+			return 0, 11000, fmt.Errorf("last login: account for arg2 %d is not created", client.AuthArg2)
+		}
+		if err := client.GetCommander(mapping.AccountID); err != nil {
+			return 0, 11000, fmt.Errorf("last login: load account %d: %w", mapping.AccountID, err)
+		}
+		if err := client.Commander.Load(); err != nil {
+			return 0, 11000, fmt.Errorf("last login: load commander %d: %w", mapping.AccountID, err)
+		}
+	}
 	now := time.Now().UTC()
 	nowUnix := uint32(now.Unix())
 	if _, err := orm.ApplyCommanderMoraleRecovery(client.Commander.CommanderID, nowUnix); err != nil {

@@ -130,6 +130,14 @@ func GetBuildByID(buildID uint32) (*Build, error) {
 
 // Removes the build from the database and adds the ship to the commander
 func (b *Build) Consume(shipId uint32, commander *Commander) (*OwnedShip, error) {
+	if commander == nil {
+		return nil, errors.New("commander is nil")
+	}
+	// Validate before deleting the build so a missing or stale game-data
+	// entry cannot permanently discard a finished build.
+	if err := ValidateOwnedShipTemplateID(shipId); err != nil {
+		return nil, err
+	}
 	// Delete the build in the database
 	if err := b.Delete(); err != nil {
 		return nil, err

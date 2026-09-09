@@ -31,6 +31,13 @@ func registerPackets() {
 	packets.RegisterPacketHandler(10022, []packets.PacketHandler{answer.JoinServer})
 	packets.RegisterPacketHandler(10024, []packets.PacketHandler{answer.CreateNewPlayer})
 	packets.RegisterPacketHandler(10026, []packets.PacketHandler{answer.PlayerExist})
+	// AuctionGameInitCommand is sent during the post-login bootstrap by newer
+	// CN clients. The current backend has no auction state yet, but an empty
+	// successful response is enough for the client to continue loading.
+	packets.RegisterPacketHandler(23430, []packets.PacketHandler{func(_ *[]byte, c *connection.Client) (int, int, error) {
+		response := protobuf.SC_20008{Result: proto.Uint32(0)}
+		return c.SendMessage(23431, &response)
+	}})
 	packets.RegisterPacketHandler(11001, []packets.PacketHandler{
 		answer.LastLogin,
 		answer.PlayerInfo,

@@ -68,6 +68,12 @@ func TestBuildConsume(t *testing.T) {
 	if err := ship.Create(); err != nil {
 		t.Fatalf("seed ship: %v", err)
 	}
+	if err := UpsertConfigEntry(shipDataTemplateCategory, "2001", []byte(`{"id":2001,"group_type":200,"strengthen_id":200,"max_level":50}`)); err != nil {
+		t.Fatalf("seed ship template config: %v", err)
+	}
+	if err := UpsertConfigEntry(shipBreakoutCategory, "2001", []byte(`{"id":2001,"breakout_id":2002,"pre_id":0,"level":0,"use_gold":0,"use_item":[],"use_char":200,"use_char_num":1,"weapon_ids":[]}`)); err != nil {
+		t.Fatalf("seed ship breakout config: %v", err)
+	}
 	commander := Commander{CommanderID: 20, AccountID: 20, Name: "Consumer"}
 	if _, err := db.DefaultStore.Pool.Exec(context.Background(), `INSERT INTO commanders (commander_id, account_id, name) VALUES ($1, $2, $3)`, int64(commander.CommanderID), int64(commander.AccountID), commander.Name); err != nil {
 		t.Fatalf("seed commander: %v", err)

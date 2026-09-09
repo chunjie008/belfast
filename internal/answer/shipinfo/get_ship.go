@@ -1,6 +1,8 @@
 package shipinfo
 
 import (
+	"errors"
+
 	"github.com/ggmolly/belfast/internal/connection"
 	"github.com/ggmolly/belfast/internal/orm"
 
@@ -18,11 +20,25 @@ func GetShip(buffer *[]byte, client *connection.Client) (int, int, error) {
 	response := protobuf.SC_12026{
 		Result: proto.Uint32(0),
 	}
+	if client == nil {
+		return 0, 12025, errors.New("get ship: nil client")
+	}
+	if client.Commander == nil {
+		response.Result = proto.Uint32(1)
+		return client.SendMessage(12026, &response)
+	}
 
 	response.ShipList = make([]*protobuf.SHIPINFO, len(data.GetPosList()))
+	if len(data.GetPosList()) == 0 {
+		return client.SendMessage(12026, &response)
+	}
 	var minPos uint32 = 999999
 	var maxPos uint32
 	for _, pos := range data.GetPosList() {
+		if pos == 0 {
+			response.Result = proto.Uint32(1)
+			return client.SendMessage(12026, &response)
+		}
 		if pos < minPos {
 			minPos = pos
 		}
@@ -39,6 +55,11 @@ func GetShip(buffer *[]byte, client *connection.Client) (int, int, error) {
 	builds, err := client.Commander.GetBuildRange(minPos, maxPos)
 	if err != nil {
 		return 0, 12025, err
+	}
+	if len(builds) < len(data.GetPosList()) {
+		response.Result = proto.Uint32(1)
+		response.ShipList = nil
+		return client.SendMessage(12026, &response)
 	}
 
 	ships := make([]*orm.OwnedShip, len(data.GetPosList()))
